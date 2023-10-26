@@ -5,14 +5,14 @@ import gym
 import os
 import numpy as np
 from functorch import combine_state_for_ensemble, vmap
-from main import D4RLReplayBuffer
+from basicTrainer import D4RLReplayBuffer
 from model import envModel, Normalizer, FCN
 import torch.optim as optim
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
 from urllib.error import HTTPError
-from main import BasicModelBasedOfflineRLTrainer
+from basicTrainer import BasicModelBasedOfflineRLTrainer
 import json
 import random
 from env_termination_fn import termination_fn
