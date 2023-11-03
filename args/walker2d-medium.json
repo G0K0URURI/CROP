@@ -6,7 +6,7 @@
     "best_env_nums": 5,
     "beta": 0.1,
     "critic_lr": 0.0003,
-    "critic_mlp_hidden_size": 256,
+    "critic_mlp_hidden_size": 512,
     "critic_update_pre_step": 2,
     "domain": "walker2d",
     "env": "walker2d-medium-v2",
