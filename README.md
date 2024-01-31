@@ -16,8 +16,8 @@ This is the soucre code of the model-based offline reinforcement learning method
 
 ## Usage
 
-Configuration files can be found in `args/`. For example, to run the hopper-medium task from the D4RL benchmark, use the following.
+Configuration files can be found in `args/`. For example, to run the halfcheetah-medium task from the D4RL benchmark, use the following.
 
 ```
-python CROP.py --args-path args/hopper-medium.json
+python CROP.py --args-path args/halfcheetah-medium.json
 ```
