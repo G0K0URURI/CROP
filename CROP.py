@@ -88,9 +88,7 @@ class CROPTrainer(BasicModelBasedOfflineRLTrainer):
     def env_state_train_step(self, state, action, next_state):
         next_state_mean_loss, next_state_var_loss = self.env_state_loss(state, action, next_state)
 
-        loss = next_state_mean_loss.mean(dim=(1, 2)).sum() + next_state_var_loss.mean(dim=(1, 2)).sum() # + \
-               # 0.02 * torch.sum(self.env_model.state_predictor.max_logstd) - \
-               # 0.02 * torch.sum(self.env_model.state_predictor.min_logstd)
+        loss = next_state_mean_loss.mean(dim=(1, 2)).sum() + next_state_var_loss.mean(dim=(1, 2)).sum()
         loss += self.env_model.state_predictor.get_decay_loss()
         self.env_state_optimizer.zero_grad()
         loss.backward()
@@ -317,18 +315,6 @@ class CROPTrainer(BasicModelBasedOfflineRLTrainer):
                 self.env_model.reward_predictor.update_save(updated_indexes)
             elif (reward_trained_flag == 1).all():
                 break
-            # for j in range(self.env_nums):
-            #     if best_reward_valid_loss[j] is None or best_reward_valid_loss[j] > valid_loss[j]:
-            #         best_reward_valid_loss[j] = valid_loss[j]
-            #         updated_indexes.append(j)
-            #
-            # if len(updated_indexes) > 0:
-            #     reward_epochs_since_update = 0
-            #     self.env_model.reward_predictor.update_save(updated_indexes)
-            # else:
-            #     reward_epochs_since_update += 1
-            #     if reward_epochs_since_update > max_epochs_since_update:
-            #         break
         indexes = self.select_elites(best_reward_valid_loss)
         self.env_model.reward_predictor.set_elites(indexes)
         self.env_model.reward_predictor.load_save()

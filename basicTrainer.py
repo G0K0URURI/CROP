@@ -268,15 +268,12 @@ class BasicModelBasedOfflineRLTrainer:
         info = 'step'
         for key in log_key:
             info += f',{key}'
-        # init_states, _, _, _, _ = self.offline_buffer.sample(500)
-        # init_states = torch.FloatTensor(init_states).to(device)
-        # self.roll_out(init_states, length=roll_out_length)
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         with open(os.path.join(save_dir, 'RL_log.csv'), 'w') as f:
             f.write(info + '\n')
-        self.actor_optimizer.state = collections.defaultdict(dict)  # 重置优化器的冲量等状态，避免之前的BC的冲量对RL的影响
-        self.critic_optimizer.state = collections.defaultdict(dict)  # 重置优化器的冲量等状态，避免之前的BC的冲量对RL的影响
+        self.actor_optimizer.state = collections.defaultdict(dict)
+        self.critic_optimizer.state = collections.defaultdict(dict)
         for i in range(int(train_step) + 1):
             init_states, _, _, _, _ = self.offline_buffer.sample(1)
             init_states = torch.FloatTensor(init_states).to(device)

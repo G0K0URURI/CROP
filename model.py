@@ -59,10 +59,6 @@ class EnsembleLinear(nn.Module):
 
 
 class ensembleStateModel(nn.Module):
-    """
-    注意MOPO源码中不直接计算next_state，而是计算next_state-state; Normalizer放到trainer中
-    """
-
     def __init__(self,
                  state_dim: int,
                  action_dim: int,
