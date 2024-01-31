@@ -1,6 +1,6 @@
 import collections
 import os
-from model import envModel, MultiQNetwork, GaussianPolicyNetwork
+from model import MultiQNetwork, GaussianPolicyNetwork
 import torch.optim as optim
 import torch
 import torch.nn.functional as F
@@ -13,12 +13,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class D4RLReplayBuffer:
-    """
-    将d4rl.qlearning_dataset的返回值处理为replay buffer
-    d4rl.qlearning_dataset的返回值为字典，其中key为'observations', 'actions', 'next_observations', 'rewards', 'terminals',
-    values为5个np.ndarray，其中第一维的大小相同，均为数据个数
-    """
-
     def __init__(self, d4rl_dataset):
         self.observations = d4rl_dataset['observations']
         self.actions = d4rl_dataset['actions']
@@ -88,9 +82,6 @@ class ModelReplayBuffer:
 
 
 class BasicModelBasedOfflineRLTrainer:
-    """
-    model-based offline RL训练基类。其中RL部分以SAC为基础。
-    """
     def __init__(self, state_dim, action_dim, critic_mlp_hidden_size, actor_mlp_hidden_size, critic_lr, actor_lr,
                  alpha_lr=3e-5, log_alpha=0., target_entropy=None, gamma=0.99, soft_tau=0.005, offline_buffer=None,
                  model_replay_buffer_capacity=1e5, env=None):
@@ -99,8 +90,6 @@ class BasicModelBasedOfflineRLTrainer:
                                     action_dim=action_dim,
                                     hidden_size=critic_mlp_hidden_size).to(device)
         self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=critic_lr)
-        # self.critic_optimizer = optim.RMSprop(self.critic.parameters(), lr=critic_lr)
-        # self.critic_optimizer = optim.Adadelta(self.critic.parameters(), lr=critic_lr)
 
         self.target_critic = MultiQNetwork(state_dim=state_dim,
                                            action_dim=action_dim,
@@ -112,15 +101,11 @@ class BasicModelBasedOfflineRLTrainer:
                                            action_dim=action_dim,
                                            hidden_dim=actor_mlp_hidden_size).to(device)
         self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=actor_lr)
-        # self.actor_optimizer = optim.RMSprop(self.actor.parameters(), lr=actor_lr)
 
         self.log_alpha = torch.FloatTensor([log_alpha]).to(device)
         self.log_alpha.requires_grad = True
-        # self.alpha = torch.FloatTensor([log_alpha]).exp().to(device)
-        # self.alpha.requires_grad = True
         self.target_entropy = -action_dim if target_entropy is None else target_entropy
         self.alpha_optimizer = optim.Adam([self.log_alpha], lr=alpha_lr)
-        # self.alpha_optimizer = optim.RMSprop([self.log_alpha], lr=alpha_lr)
 
         self.gamma = gamma
         self.soft_tau = soft_tau
@@ -132,10 +117,6 @@ class BasicModelBasedOfflineRLTrainer:
     @property
     def alpha(self):
         return self.log_alpha.exp()
-
-    # @property
-    # def log_alpha(self):
-    #     return self.alpha.log()
 
     def env_train(self, batch_size, train_step, save_dir, valid_size=5000):
         pass
@@ -260,7 +241,7 @@ class BasicModelBasedOfflineRLTrainer:
         with torch.no_grad():
             new_action, log_prob, _, _, _ = self.actor.evaluate(state)
             alpha_loss = log_prob + self.target_entropy
-        entropy = -alpha_loss.mean()+ self.target_entropy
+        entropy = -alpha_loss.mean() + self.target_entropy
         alpha_loss = -self.alpha * alpha_loss.mean()
         self.alpha_optimizer.zero_grad()
         alpha_loss.backward()

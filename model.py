@@ -4,100 +4,292 @@ import torch.nn.functional as F
 from torch import autograd
 from torch.distributions import Normal
 import numpy as np
+from typing import List, Union, Tuple, Optional
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# 解耦状态和回报预测的环境模型
-class envModel(nn.Module):
+
+class EnsembleLinear(nn.Module):
+    def __init__(
+            self,
+            input_dim: int,
+            output_dim: int,
+            num_ensemble: int,
+            weight_decay: float = 0.0
+    ) -> None:
+        super().__init__()
+
+        self.num_ensemble = num_ensemble
+
+        self.register_parameter("weight", nn.Parameter(torch.zeros(num_ensemble, input_dim, output_dim)))
+        self.register_parameter("bias", nn.Parameter(torch.zeros(num_ensemble, 1, output_dim)))
+
+        nn.init.trunc_normal_(self.weight, std=1 / (2 * input_dim ** 0.5))
+
+        self.register_parameter("saved_weight", nn.Parameter(self.weight.detach().clone(), requires_grad=False))
+        self.register_parameter("saved_bias", nn.Parameter(self.bias.detach().clone(), requires_grad=False))
+
+        self.weight_decay = weight_decay
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        weight = self.weight
+        bias = self.bias
+
+        if len(x.shape) == 2:
+            x = torch.einsum('ij,bjk->bik', x, weight)
+        else:
+            x = torch.einsum('bij,bjk->bik', x, weight)
+
+        x = x + bias
+
+        return x
+
+    def load_save(self) -> None:
+        self.weight.data.copy_(self.saved_weight.data)
+        self.bias.data.copy_(self.saved_bias.data)
+
+    def update_save(self, indexes: List[int]) -> None:
+        self.saved_weight.data[indexes] = self.weight.data[indexes]
+        self.saved_bias.data[indexes] = self.bias.data[indexes]
+
+    def get_decay_loss(self) -> torch.Tensor:
+        decay_loss = self.weight_decay * (0.5 * ((self.weight ** 2).sum()))
+        return decay_loss
+
+
+class ensembleStateModel(nn.Module):
     """
-    注意MOPO源码中不直接计算next_state，而是计算next_state-state
+    注意MOPO源码中不直接计算next_state，而是计算next_state-state; Normalizer放到trainer中
     """
-    def __init__(self, state_dim, action_dim, mlp_layer_number, mlp_hidden_size, max_logstd=0.25, min_logstd=-5,
-                 max_reward=None, min_reward=None):
-        super(envModel, self).__init__()
-        assert mlp_layer_number > 1
 
-        self.state_predictor = torch.nn.ModuleList([nn.Linear(state_dim + action_dim, mlp_hidden_size), nn.SiLU()])
-        self.reward_predictor = torch.nn.ModuleList([nn.Linear(state_dim + action_dim, mlp_hidden_size), nn.SiLU()])
+    def __init__(self,
+                 state_dim: int,
+                 action_dim: int,
+                 mlp_hidden_size: Union[List[int], Tuple[int]],
+                 num_ensemble: int = 7,
+                 num_elites: int = 5,
+                 activation: nn.Module = nn.SiLU,
+                 weight_decays: Optional[Union[List[float], Tuple[float]]] = None,
+                 max_logstd: float = 0.25,
+                 min_logstd: float = -5):
+        super(ensembleStateModel, self).__init__()
+        self.num_ensemble = num_ensemble
+        self.num_elites = num_elites
 
-        for _ in range(mlp_layer_number - 1):
-            self.state_predictor.append(nn.Linear(mlp_hidden_size, mlp_hidden_size))
-            self.state_predictor.append(nn.SiLU())
-        self.state_predictor.append(nn.Linear(mlp_hidden_size, 2 * state_dim))  # 输出为state分布（高斯分布）的均值和方差
+        if weight_decays is None:
+            weight_decays = [0.0] * (len(mlp_hidden_size) + 1)
+        assert len(mlp_hidden_size) > 1
+        assert len(weight_decays) == (len(mlp_hidden_size) + 1)
 
-        for _ in range(mlp_layer_number - 1):
-            self.reward_predictor.append(nn.Linear(mlp_hidden_size, mlp_hidden_size))
-            self.reward_predictor.append(nn.SiLU())
-        self.reward_predictor.append(nn.Linear(mlp_hidden_size, 1))  # 输出为reward
+        mlp_hidden_size = [state_dim + action_dim] + list(mlp_hidden_size)
+        self.predictor = torch.nn.ModuleList([])
+        for in_dim, out_dim, weight_decay in zip(mlp_hidden_size[:-1], mlp_hidden_size[1:], weight_decays[:-1]):
+            self.predictor.append(EnsembleLinear(in_dim, out_dim, num_ensemble, weight_decay))
+            self.predictor.append(activation())
+        self.predictor.append(EnsembleLinear(mlp_hidden_size[-1], 2 * state_dim, num_ensemble,
+                                             weight_decays[-1]))  # 输出为state分布（高斯分布）的均值和方差
 
         self.normalizer = Normalizer(state_dim + action_dim)
 
         self.state_dim = state_dim
-        self.max_logstd = torch.nn.Parameter(torch.ones([1, state_dim]) * max_logstd, requires_grad=True)
-        self.min_logstd = torch.nn.Parameter(torch.ones([1, state_dim]) * min_logstd, requires_grad=True)
-        self.max_reward = max_reward
-        self.min_reward = min_reward
+        # self.max_logstd = torch.nn.Parameter(torch.ones([1, state_dim]) * max_logstd, requires_grad=True)
+        # self.min_logstd = torch.nn.Parameter(torch.ones([1, state_dim]) * min_logstd, requires_grad=True)
+        self.register_parameter(
+            'max_logstd',
+            nn.Parameter(torch.ones(state_dim) * max_logstd, requires_grad=False))
+        self.register_parameter(
+            'min_logstd',
+            nn.Parameter(torch.ones(state_dim) * min_logstd, requires_grad=False))
+        self.register_parameter(
+            "elites",
+            nn.Parameter(torch.tensor(list(range(0, self.num_elites))), requires_grad=False)
+        )
 
     def forward(self, state, action):
         x = torch.cat([state, action], dim=-1)
         x = self.normalizer.transform(x)
 
         state_pre = x
-        for i in range(len(self.state_predictor)):
-            state_pre = self.state_predictor[i](state_pre)
-        state_pre_mean = state_pre[:, :self.state_dim] + state  # 模型计算的是state的变化量
-        logstd = state_pre[:, self.state_dim:]
+        for i in range(len(self.predictor)):
+            state_pre = self.predictor[i](state_pre)
+        state_pre_mean = state_pre[:, :, :self.state_dim] + state  # 模型计算的是state的变化量
+        logstd = state_pre[:, :, self.state_dim:]
         logstd = self.reform_logstd(logstd)
 
-        reward_pre = x
-        for i in range(len(self.reward_predictor)):
-            reward_pre = self.reward_predictor[i](reward_pre)
-
-        reward_pre = self.reward_antinormalization(reward_pre)
-        return state_pre_mean, logstd.exp(), reward_pre
+        return state_pre_mean, logstd.exp()
 
     def reform_logstd(self, logstd):
         logstd = self.max_logstd - torch.nn.functional.softplus(self.max_logstd - logstd)
         logstd = self.min_logstd + torch.nn.functional.softplus(logstd - self.min_logstd)
         return logstd
 
-    def reward_antinormalization(self, reward):
-        reward = torch.sigmoid(reward) * (self.max_reward - self.min_reward) + self.min_reward
-        return reward
-
-    def pre_dist_and_reward(self, state, action):
-        state_pre_mean, state_pre_std, reward_pre = self.forward(state, action)
+    def pre_dist(self, state, action):
+        state_pre_mean, state_pre_std = self.forward(state, action)
         next_state_dist = Normal(state_pre_mean, state_pre_std)
-        # reward_pre = self.reward_antinormalization(reward_pre)
-        return next_state_dist, reward_pre
+        return next_state_dist
 
-    def pre_next_state_mean_and_var_and_reward(self, state, action):
-        state_pre_mean, state_pre_std, reward_pre = self.forward(state, action)
-        # reward_pre = self.reward_antinormalization(reward_pre)
-        return state_pre_mean, state_pre_std.square(), reward_pre
+    def pre_next_state_mean_and_var(self, state, action):
+        state_pre_mean, state_pre_std = self.forward(state, action)
+        return state_pre_mean, state_pre_std.square()
 
-    def pre_next_state_mean_and_std(self, state, action):
-        x = torch.cat([state, action], dim=-1)
-        x = self.normalizer.transform(x)
+    def get_decay_loss(self):
+        decay_loss = 0
+        for layer in self.predictor:
+            if isinstance(layer, EnsembleLinear):
+                decay_loss += layer.get_decay_loss()
+        return decay_loss
 
-        state_pre = x
-        for i in range(len(self.state_predictor)):
-            state_pre = self.state_predictor[i](state_pre)
-        state_pre_mean = state_pre[:, :self.state_dim] + state  # 模型计算的是state的变化量
-        logstd = state_pre[:, self.state_dim:]
-        logstd = self.reform_logstd(logstd)
+    def load_save(self) -> None:
+        for layer in self.predictor:
+            if isinstance(layer, EnsembleLinear):
+                layer.load_save()
 
-        state_pre_std = logstd.exp()
-        return state_pre_mean, state_pre_std
+    def update_save(self, indexes: List[int]) -> None:
+        for layer in self.predictor:
+            if isinstance(layer, EnsembleLinear):
+                layer.update_save(indexes)
 
-    def pre_reward(self, state, action):
+    def set_elites(self, indexes: List[int]) -> None:
+        assert len(indexes) <= self.num_ensemble and max(indexes) < self.num_ensemble
+        self.register_parameter('elites', nn.Parameter(torch.tensor(indexes), requires_grad=False))
+
+    def random_elite_idxs(self, batch_size: int) -> np.ndarray:
+        idxs = np.random.choice(self.elites.data.cpu().numpy(), size=batch_size)
+        return idxs
+
+
+class ensembleRewardModel(nn.Module):
+    def __init__(self,
+                 state_dim: int,
+                 action_dim: int,
+                 mlp_hidden_size: Union[List[int], Tuple[int]],
+                 num_ensemble: int = 7,
+                 num_elites: int = 5,
+                 activation: nn.Module = nn.SiLU,
+                 weight_decays: Optional[Union[List[float], Tuple[float]]] = None,
+                 max_reward: float = None,
+                 min_reward: float = None):
+        super(ensembleRewardModel, self).__init__()
+        self.num_ensemble = num_ensemble
+        self.num_elites = num_elites
+
+        if weight_decays is None:
+            weight_decays = [0.0] * (len(mlp_hidden_size) + 1)
+        assert len(mlp_hidden_size) > 1
+        assert len(weight_decays) == (len(mlp_hidden_size) + 1)
+
+        mlp_hidden_size = [state_dim + action_dim] + list(mlp_hidden_size)
+        self.predictor = torch.nn.ModuleList([])
+        for in_dim, out_dim, weight_decay in zip(mlp_hidden_size[:-1], mlp_hidden_size[1:], weight_decays[:-1]):
+            self.predictor.append(EnsembleLinear(in_dim, out_dim, num_ensemble, weight_decay))
+            self.predictor.append(activation())
+        self.predictor.append(EnsembleLinear(mlp_hidden_size[-1], 1, num_ensemble,
+                                             weight_decays[-1]))  # 输出为state分布（高斯分布）的均值和方差
+
+        self.normalizer = Normalizer(state_dim + action_dim)
+        self.max_reward = max_reward
+        self.min_reward = min_reward
+        self.register_parameter(
+            "elites",
+            nn.Parameter(torch.tensor(list(range(0, self.num_elites))), requires_grad=False)
+        )
+
+    def forward(self, state, action):
         x = torch.cat([state, action], dim=-1)
         x = self.normalizer.transform(x)
 
         reward_pre = x
-        for i in range(len(self.reward_predictor)):
-            reward_pre = self.reward_predictor[i](reward_pre)
-        reward_pre = self.reward_antinormalization(reward_pre)
+        for i in range(len(self.predictor)):
+            reward_pre = self.predictor[i](reward_pre)
+
+        if self.max_reward is not None:
+            reward_pre = torch.sigmoid(reward_pre) * (self.max_reward - self.min_reward) + self.min_reward
+        return reward_pre
+
+    def get_decay_loss(self):
+        decay_loss = 0
+        for layer in self.predictor:
+            if isinstance(layer, EnsembleLinear):
+                decay_loss += layer.get_decay_loss()
+        return decay_loss
+
+    def load_save(self) -> None:
+        for layer in self.predictor:
+            if isinstance(layer, EnsembleLinear):
+                layer.load_save()
+
+    def update_save(self, indexes: List[int]) -> None:
+        for layer in self.predictor:
+            if isinstance(layer, EnsembleLinear):
+                layer.update_save(indexes)
+
+    def set_elites(self, indexes: List[int]) -> None:
+        assert len(indexes) <= self.num_ensemble and max(indexes) < self.num_ensemble
+        self.register_parameter('elites', nn.Parameter(torch.tensor(indexes), requires_grad=False))
+
+    def random_elite_idxs(self, batch_size: int) -> np.ndarray:
+        idxs = np.random.choice(self.elites.data.cpu().numpy(), size=batch_size)
+        return idxs
+
+
+class ensembleModel(nn.Module):
+    def __init__(self,
+                 state_dim: int,
+                 action_dim: int,
+                 state_mlp_hidden_size: Union[List[int], Tuple[int]],
+                 reward_mlp_hidden_size: Union[List[int], Tuple[int]],
+                 num_ensemble: int = 7,
+                 num_elites: int = 5,
+                 activation: nn.Module = nn.SiLU,
+                 state_weight_decays: Optional[Union[List[float], Tuple[float]]] = None,
+                 reward_weight_decays: Optional[Union[List[float], Tuple[float]]] = None,
+                 max_logstd: float = 0.25,
+                 min_logstd: float = -5,
+                 max_reward: float = None,
+                 min_reward: float = None
+                 ):
+        super(ensembleModel, self).__init__()
+        self.state_predictor = ensembleStateModel(state_dim=state_dim,
+                                                  action_dim=action_dim,
+                                                  mlp_hidden_size=state_mlp_hidden_size,
+                                                  num_ensemble=num_ensemble,
+                                                  num_elites=num_elites,
+                                                  activation=activation,
+                                                  weight_decays=state_weight_decays,
+                                                  max_logstd=max_logstd,
+                                                  min_logstd=min_logstd)
+
+        self.reward_predictor = ensembleRewardModel(state_dim=state_dim,
+                                                    action_dim=action_dim,
+                                                    mlp_hidden_size=reward_mlp_hidden_size,
+                                                    num_ensemble=num_ensemble,
+                                                    num_elites=num_elites,
+                                                    activation=activation,
+                                                    weight_decays=reward_weight_decays,
+                                                    max_reward=max_reward,
+                                                    min_reward=min_reward)
+
+    def forward(self, state, action):
+        state_pre_mean, state_pre_std = self.state_predictor(state, action)
+        reward_pre = self.reward_predictor(state, action)
+        return state_pre_mean, state_pre_std, reward_pre
+
+    def pre_dist_and_reward(self, state, action):
+        state_pre_mean, state_pre_std, reward_pre = self.forward(state, action)
+        next_state_dist = Normal(state_pre_mean, state_pre_std)
+        return next_state_dist, reward_pre
+
+    def pre_next_state_mean_and_var_and_reward(self, state, action):
+        state_pre_mean, state_pre_std, reward_pre = self.forward(state, action)
+        return state_pre_mean, state_pre_std.square(), reward_pre
+
+    def pre_next_state_mean_and_std(self, state, action):
+        state_pre_mean, state_pre_std = self.state_predictor(state, action)
+        return state_pre_mean, state_pre_std
+
+    def pre_reward(self, state, action):
+        reward_pre = self.reward_predictor(state, action)
         return reward_pre
 
 
