@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0a2b8f1c-c981-459d-9a64-a395bb81b6eb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/CROP.py" beforeDir="false" afterPath="$PROJECT_DIR$/CROP.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/basicTrainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/basicTrainer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="hiddenUrls">
+      <set>
+        <option value="https://github.com/G0K0URURI/CROP.git" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectId" id="2TGuwwrTo4QtNDfXOP4IHkvI5aT" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/args" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\study\py project\CROP" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\study\py project\CROP\args" />
+      <recent name="D:\study\py project\CROP" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.CROP_single">
+    <configuration name="CROP_simple" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="CROP" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/CROP_simple.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="CROP_single" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="CROP" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="LD_LIBRARY_PATH" value="/usr/lib/nvidia:/home/lihao/.mujoco/mujoco210/bin" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/CROP_single.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="simple_mdp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="CROP" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/simple_mdp.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.CROP_single" />
+      <item itemvalue="Python.simple_mdp" />
+      <item itemvalue="Python.CROP_simple" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.CROP_single" />
+        <item itemvalue="Python.CROP_simple" />
+        <item itemvalue="Python.simple_mdp" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0a2b8f1c-c981-459d-9a64-a395bb81b6eb" name="Default Changelist" comment="" />
+      <created>1690681980945</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1690681980945</updated>
+      <workItem from="1690681982768" duration="2101000" />
+      <workItem from="1690684361226" duration="8330000" />
+      <workItem from="1690977019017" duration="53000" />
+      <workItem from="1691974109799" duration="28679000" />
+      <workItem from="1692360416614" duration="2456000" />
+      <workItem from="1692666946922" duration="91000" />
+      <workItem from="1698289748703" duration="82000" />
+      <workItem from="1698303563784" duration="1350000" />
+      <workItem from="1698495261999" duration="12000" />
+      <workItem from="1698978148581" duration="2254000" />
+      <workItem from="1706683846145" duration="4160000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="false" />
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="-1361" y="178" key="#Deployment" timestamp="1691986012377">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1361" y="178" key="#Deployment/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1691986012377" />
+    <state x="559" y="178" key="#Deployment/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1690682165966" />
+    <state x="-1308" y="195" key="#Options" timestamp="1691986020190">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1308" y="195" key="#Options/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1691986020190" />
+    <state x="612" y="195" key="#Options/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1690682234905" />
+    <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1698979077269">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1506" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1691985917792" />
+    <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1698979077269" />
+    <state x="107" y="100" width="1720" height="840" key="DiffContextDialog" timestamp="1690682394831">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="107" y="100" width="1720" height="840" key="DiffContextDialog/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1690682394831" />
+    <state x="-1173" y="274" key="FileChooserDialogImpl" timestamp="1698979771572">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1173" y="274" key="FileChooserDialogImpl/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1698979771572" />
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1699361046526">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1699361046526" />
+    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1699361046526">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.center/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1699361046526" />
+    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1699361046524">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.left/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1699361046524" />
+    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1699361046526">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.right/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1699361046526" />
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1692346529007">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1692346529007" />
+    <state width="1877" height="348" key="GridCell.Tab.1.center" timestamp="1692346529007">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.center/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1692346529007" />
+    <state width="1877" height="348" key="GridCell.Tab.1.left" timestamp="1692346529007">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.left/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1692346529007" />
+    <state width="1877" height="348" key="GridCell.Tab.1.right" timestamp="1692346529007">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.right/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1692346529007" />
+    <state x="-1452" y="164" key="SettingsEditor" timestamp="1698979783826">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1452" y="164" key="SettingsEditor/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1698979783826" />
+    <state x="468" y="164" key="SettingsEditor/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1690682068034" />
+    <state width="968" height="528" key="XDebugger.FullValuePopup" timestamp="1692092185027">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state width="968" height="528" key="XDebugger.FullValuePopup/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1692092185027" />
+    <state x="-1162" y="404" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration" timestamp="1698979783263">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1162" y="404" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1698979783263" />
+    <state x="-1062" y="250" key="ftp.server.browser" timestamp="1698979782647">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1062" y="250" key="ftp.server.browser/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1698979782647" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="reward_predictor[0]" language="Python" />
+        <watch expression="torch.tensor([0, action], dtype=torch.float32).to(device)" language="Python" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/CROP$CROP_simple.coverage" NAME="CROP_simple Coverage Results" MODIFIED="1692096709512" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CROP$CROP_single.coverage" NAME="CROP_single Coverage Results" MODIFIED="1698979793203" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CROP$simple_mdp.coverage" NAME="simple_mdp Coverage Results" MODIFIED="1691985735284" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
