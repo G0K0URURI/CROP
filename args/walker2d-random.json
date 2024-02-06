@@ -30,7 +30,7 @@
         200,
         200
     ],
-    "reward_path": "reward-beta.01-seed1",
+    "reward_path": "reward-beta.01-seed0",
     "reward_range": 1.0,
     "reward_weight_decays": [
         5e-05,
@@ -39,13 +39,13 @@
         5e-05,
         5e-05
     ],
-    "rl_path": "rl-beta.01-roll10-seed1",
+    "rl_path": "rl-beta.01-roll10-seed0",
     "rl_step": 3000000.0,
     "roll_out_batch_size": 50000,
     "roll_out_freq": 1000,
     "roll_out_length": 10,
     "save_path": "walker2d-r",
-    "seed": 1,
+    "seed": 0,
     "soft_tau": 0.005,
     "state_mlp_hidden_size": [
         200,
@@ -53,7 +53,7 @@
         200,
         200
     ],
-    "state_path": "state-seed1",
+    "state_path": "state-seed0",
     "state_weight_decays": [
         5e-05,
         5e-05,

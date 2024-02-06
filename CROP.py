@@ -252,7 +252,6 @@ class CROPTrainer(BasicModelBasedOfflineRLTrainer):
         best_reward_valid_loss = np.array([None]).repeat(self.env_nums)
         reward_epochs_since_update = np.zeros(self.env_nums)
         reward_trained_flag = np.zeros(self.env_nums)
-        # reward_epochs_since_update = 0
         info = 'epoch'
         for key in log_key:
             info += f',{key}'
@@ -317,18 +316,6 @@ class CROPTrainer(BasicModelBasedOfflineRLTrainer):
                 self.env_model.reward_predictor.update_save(updated_indexes)
             elif (reward_trained_flag == 1).all():
                 break
-            # for j in range(self.env_nums):
-            #     if best_reward_valid_loss[j] is None or best_reward_valid_loss[j] > valid_loss[j]:
-            #         best_reward_valid_loss[j] = valid_loss[j]
-            #         updated_indexes.append(j)
-            #
-            # if len(updated_indexes) > 0:
-            #     reward_epochs_since_update = 0
-            #     self.env_model.reward_predictor.update_save(updated_indexes)
-            # else:
-            #     reward_epochs_since_update += 1
-            #     if reward_epochs_since_update > max_epochs_since_update:
-            #         break
         indexes = self.select_elites(best_reward_valid_loss)
         self.env_model.reward_predictor.set_elites(indexes)
         self.env_model.reward_predictor.load_save()
@@ -362,7 +349,6 @@ class CROPTrainer(BasicModelBasedOfflineRLTrainer):
                 next_state_std = next_state_std_ensemble[state_index, np.arange(0, batch_size)]
                 noise = torch.randn_like(next_state_std)
                 next_state = next_state_mean + noise * next_state_std
-                # reward = reward_ensemble[model_index, np.arange(0, batch_size)]
 
                 reward_index = self.env_model.reward_predictor.elites.data.cpu().numpy()
                 reward = reward_ensemble[reward_index].mean(dim=0)
